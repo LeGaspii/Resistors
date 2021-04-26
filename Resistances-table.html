@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+<body>
+
+<h2>Resistances</h2>
+
+<p>Type a number between 1 and 10.</p>
+<input type="number" id="myNumber" value="0">
+
+<button onclick="resistanceValues()">Try it</button>
+
+<div class="container">
+<table id="table" class="table table-borderless table-striped table-earning">
+  <thead id="series"></thead>
+  <tbody id="results"></tbody>
+</table>
+</div>
+
+<script>
+
+
+function resistanceValues(){
+	$("#table tr").remove();
+
+   var val = document.getElementById("myNumber").value;
+   var closestValuesForE = {
+   		keys : [12,24,48,96,192],
+        EList : ["E12","E24","E48","E96","E192"],
+        values : [0,0,0,0,0]
+   };
+
+   var arrayE = [];
+   var i;
+
+   for (indexKeys in closestValuesForE.keys) {
+   	var E = closestValuesForE.keys[indexKeys];
+       for (i = 0; i <= E; i++) {
+             if( E <= 24 ){
+             	arrayE[arrayE.length] = Math.round((10**(i/E))*10)/10;
+             } else {
+             	arrayE[arrayE.length] = Math.round((10**(i/E))*100)/100;
+             }
+       }
+       closestValuesForE.values[indexKeys] =closest(arrayE, val, false);
+       arrayE = [];
+    }
+
+	addARow("series", "Series", closestValuesForE.EList);
+    _ = closest(closestValuesForE.values,val, true);
+	addARow("results", "Closest value for each series", closestValuesForE.values);
+	addARow("results", "%error", error(closestValuesForE.values, val));
+}
+
+
+function closest(array,num,fillClosestRow){
+    var i=0;
+    var minDiff=1000;
+    var ans;
+	var savedI=0;
+	var closestRow = [0,0,0,0,0];
+    for(i in array){
+         var m=Math.abs(num-array[i]);
+         if(m<minDiff){
+                minDiff=m;
+                ans=array[i];
+				savedI=i;
+            }
+    }
+	closestRow[savedI]= ans;
+	if (fillClosestRow){
+		addARow("results", "Closest Resistor (R1)", closestRow);
+	}
+    return ans;
+}
+
+function error(items, target){
+    var ans = [];
+	var i = 0;
+	items.forEach( item => {
+		ans[i]=Math.abs(Math.round((100-((item*100)/target))*100)/100);
+		i++;
+    });
+    return ans;
+}
+
+function addARow(tableId ,explanations, items){
+	var table = document.getElementById(tableId);
+	var rowNode = document.createElement("tr");
+
+	var cellNode = document.createElement("td");
+	var textNode = document.createTextNode(explanations);
+	cellNode.appendChild(textNode);
+	rowNode.appendChild(cellNode);
+
+	items.forEach( item => {
+		var cellNode = document.createElement("td");
+		if(item != 0){
+			var textNode = document.createTextNode(item);
+			cellNode.appendChild(textNode);
+		}
+		rowNode.appendChild(cellNode);
+    });
+	table.appendChild(rowNode);
+}
+</script>
+
+</body>
+</html>
