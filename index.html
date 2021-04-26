@@ -314,6 +314,8 @@ layout: home
         _ = closest(closestValuesForE.values,val, true);
       addARow("results", "Closest value for each series", closestValuesForE.values);
       addARow("results", "%error", error(closestValuesForE.values, val));
+      document.querySelectorAll("#table td").forEach(function(e){e.classList.add('border-4','px-4','py-4')});
+      document.querySelectorAll("#series td").forEach(function(e){e.classList.add('bg-yellow-200')});
     }
 
 
